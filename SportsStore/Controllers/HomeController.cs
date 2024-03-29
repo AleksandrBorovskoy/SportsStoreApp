@@ -14,21 +14,21 @@ namespace SportsStore.Controllers
             this.repository = repository;
         }
 
-        public ViewResult Index(int productPage = 1)
-        {
-            return this.View(new ProductsListViewModel
-            {
-                Products = this.repository.Products
-                               .OrderBy(p => p.ProductId)
-                               .Skip((productPage - 1) * this.pageSize)
-                               .Take(this.pageSize),
-                PagingInfo = new PagingInfo
-                {
-                    CurrentPage = productPage,
-                    ItemsPerPage = this.pageSize,
-                    TotalItems = this.repository.Products.Count(),
-                },
-            });
-        }
+        public ViewResult Index(string? category, int productPage = 1)
+              => this.View(new ProductsListViewModel
+              {
+                  Products = this.repository.Products
+                  .Where(p => category == null || p.Category == category)
+                  .OrderBy(p => p.ProductId)
+                  .Skip((productPage - 1) * this.pageSize)
+                  .Take(this.pageSize),
+                  PagingInfo = new PagingInfo
+                  {
+                      CurrentPage = productPage,
+                      ItemsPerPage = this.pageSize,
+                      TotalItems = category == null ? repository.Products.Count() : repository.Products.Where(e => e.Category == category).Count(),
+                  },
+                  CurrentCategory = category,
+              });
     }
 }
