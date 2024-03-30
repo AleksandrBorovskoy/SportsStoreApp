@@ -8,13 +8,13 @@ builder.Services.AddControllersWithViews();
 builder.Services.AddDbContext<StoreDbContext>(opt => opt.UseSqlServer(builder.Configuration["ConnectionStrings:SportsStoreConnection"]));
 
 builder.Services.AddScoped<IStoreRepository, EFStoreRepository>();
+builder.Services.AddScoped<IOrderRepository, EFOrderRepository>();
 
 builder.Services.AddDistributedMemoryCache();
 builder.Services.AddSession();
 
 builder.Services.AddScoped<Cart>(SessionCart.GetCart);
 builder.Services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
-
 
 var app = builder.Build();
 
