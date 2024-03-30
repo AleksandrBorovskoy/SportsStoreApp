@@ -14,6 +14,8 @@ namespace SportsStore.Models
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             modelBuilder.Entity<Order>().HasKey(o => o.OrderId);
+            modelBuilder.Entity<Order>().Property(o => o.Shipped)
+                .HasColumnName("Shipped");
         }
     }
 }
