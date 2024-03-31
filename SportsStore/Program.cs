@@ -22,6 +22,11 @@ builder.Services.AddIdentity<IdentityUser, IdentityRole>().AddEntityFrameworkSto
 
 var app = builder.Build();
 
+if (app.Environment.IsProduction())
+{
+    app.UseExceptionHandler("/Error");
+}
+
 app.UseStaticFiles();
 
 app.UseSession();
@@ -64,8 +69,14 @@ app.MapControllerRoute(
       "Remove",
       new { Controller = "Cart", action = "Remove" });
 
+app.MapControllerRoute(
+      "error",
+      "Error",
+      new { Controller = "Home", action = "Error" });
+
 app.MapDefaultControllerRoute();
 
 SeedData.EnsurePopulated(app);
+IdentitySeedData.EnsurePopulated(app);
 
 app.Run();
