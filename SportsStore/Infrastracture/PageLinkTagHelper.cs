@@ -13,16 +13,15 @@ namespace SportsStore.Infrastructure
     {
         private readonly IUrlHelperFactory urlHelperFactory;
 
-        public string? PageRoute { get; set; }
-
-        [HtmlAttributeName(DictionaryAttributePrefix = "page-url-")]
-        public Dictionary<string, object> PageUrlValues { get; set; } = new Dictionary<string, object>();
-
-
         public PageLinkTagHelper(IUrlHelperFactory helperFactory)
         {
             this.urlHelperFactory = helperFactory;
         }
+
+        public string? PageRoute { get; set; }
+
+        [HtmlAttributeName(DictionaryAttributePrefix = "page-url-")]
+        public Dictionary<string, object> PageUrlValues { get; } = new Dictionary<string, object>();
 
         [ViewContext]
         [HtmlAttributeNotBound]
@@ -40,9 +39,13 @@ namespace SportsStore.Infrastructure
 
         public string PageClassSelected { get; set; } = string.Empty;
 
-
         public override void Process(TagHelperContext context, TagHelperOutput output)
         {
+            if (output is null)
+            {
+                throw new ArgumentNullException(nameof(output));
+            }
+
             if (this.ViewContext != null && this.PageModel != null)
             {
                 IUrlHelper urlHelper = this.urlHelperFactory.GetUrlHelper(this.ViewContext);
@@ -51,8 +54,6 @@ namespace SportsStore.Infrastructure
                 {
                     TagBuilder tag = new TagBuilder("a");
                     this.PageUrlValues[key: "productPage"] = i;
-                    tag.Attributes[key: "href"] = urlHelper.Action(action: PageAction, values: PageUrlValues);
-                    tag.Attributes[key: "href"] = urlHelper.RouteUrl(routeName: PageRoute, values: PageUrlValues);
 
                     if (this.PageClassesEnabled)
                     {

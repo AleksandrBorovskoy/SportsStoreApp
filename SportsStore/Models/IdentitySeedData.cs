@@ -5,35 +5,38 @@ namespace SportsStore.Models
 {
     public static class IdentitySeedData
     {
-        private const string adminUser = "Admin";
-        private const string adminPassword = "Secret123$";
+        private const string AdminUser = "Admin";
+        private const string AdminPassword = "Secret123$";
 
-        public static async void EnsurePopulated(IApplicationBuilder app)
+        public static async Task EnsurePopulatedAsync(IApplicationBuilder app)
         {
-            AppIdentityDbContext context = app.ApplicationServices
-                .CreateScope().ServiceProvider
-                .GetRequiredService<AppIdentityDbContext>();
+            if (app is null)
+            {
+                throw new ArgumentNullException(nameof(app));
+            }
+
+            using var scope = app.ApplicationServices.CreateScope();
+            var serviceProvider = scope.ServiceProvider;
+            AppIdentityDbContext context = serviceProvider.GetRequiredService<AppIdentityDbContext>();
 
             if (context.Database.GetPendingMigrations().Any())
             {
                 context.Database.Migrate();
             }
 
-            UserManager<IdentityUser> userManager = app.ApplicationServices
-                .CreateScope().ServiceProvider
-                .GetRequiredService<UserManager<IdentityUser>>();
+            UserManager<IdentityUser> userManager = serviceProvider.GetRequiredService<UserManager<IdentityUser>>();
 
-            IdentityUser user = await userManager.FindByNameAsync(adminUser);
+            IdentityUser user = await userManager.FindByNameAsync(AdminUser);
 
             if (user is null)
             {
                 user = new IdentityUser("Admin")
                 {
                     Email = "admin@example.com",
-                    PhoneNumber = "555-1234"
+                    PhoneNumber = "555-1234",
                 };
 
-                await userManager.CreateAsync(user, adminPassword);
+                await userManager.CreateAsync(user, AdminPassword);
             }
         }
     }

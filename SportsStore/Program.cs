@@ -77,6 +77,6 @@ app.MapControllerRoute(
 app.MapDefaultControllerRoute();
 
 SeedData.EnsurePopulated(app);
-IdentitySeedData.EnsurePopulated(app);
+await IdentitySeedData.EnsurePopulatedAsync(app);
 
 app.Run();

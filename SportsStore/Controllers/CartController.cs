@@ -8,7 +8,7 @@ namespace SportsStore.Controllers
 {
     public class CartController : Controller
     {
-        private IStoreRepository repository;
+        private readonly IStoreRepository repository;
 
         public CartController(IStoreRepository repository, Cart cart)
         {
@@ -21,42 +21,57 @@ namespace SportsStore.Controllers
         [HttpGet]
         public IActionResult Index(string returnUrl)
         {
-            return View(new CartViewModel
+            return this.View(new CartViewModel
             {
                 ReturnUrl = returnUrl ?? "/",
-                Cart = this.Cart
+                Cart = this.Cart,
             });
+        }
+
+        public IActionResult Index(Uri uri)
+        {
+            throw new NotImplementedException();
         }
 
         [HttpPost]
         public IActionResult Index(long productId, string returnUrl)
         {
-            Product? product = repository.Products.FirstOrDefault(p => p.ProductId == productId);
+            Product? product = this.repository.Products.FirstOrDefault(p => p.ProductId == productId);
 
             if (product != null)
             {
                 this.Cart.AddItem(product, 1);
 
-                return View(new CartViewModel
+                return this.View(new CartViewModel
                 {
                     Cart = this.Cart,
-                    ReturnUrl = returnUrl
+                    ReturnUrl = returnUrl,
                 });
             }
 
-            return RedirectToAction("Index", "Home");
+            return this.RedirectToAction("Index", "Home");
+        }
+
+        public IActionResult Index(long productId, Uri uri)
+        {
+            throw new NotImplementedException();
         }
 
         [HttpPost]
         [Route("Cart/Remove")]
         public IActionResult Remove(long productId, string returnUrl)
         {
-            Cart.RemoveLine(Cart.Lines.First(cl => cl.Product.ProductId == productId).Product);
-            return View("Index", new CartViewModel
+            this.Cart.RemoveLine(this.Cart.Lines.First(cl => cl.Product.ProductId == productId).Product);
+            return this.View("Index", new CartViewModel
             {
-                Cart = Cart,
-                ReturnUrl = returnUrl ?? "/"
+                Cart = this.Cart,
+                ReturnUrl = returnUrl ?? "/",
             });
+        }
+
+        public IActionResult Remove(long productId, Uri uri)
+        {
+            throw new NotImplementedException();
         }
     }
 }
